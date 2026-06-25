@@ -9,12 +9,12 @@ $data = json_decode(
     true
 );
 
-$name = trim($data['name'] ?? '');
-$email = trim($data['email'] ?? '');
-$password = trim($data['password'] ?? '');
-$description = trim($data['description'] ?? '');
-$location = trim($data['location'] ?? '');
-$photo = trim($data['photo'] ?? '');
+$name = trim($_POST['name'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$password = trim($_POST['password'] ?? '');
+
+$description = trim($_POST['description'] ?? '');
+$location = trim($_POST['location'] ?? '');
 
 if (
     empty($name) ||

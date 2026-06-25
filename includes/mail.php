@@ -13,10 +13,10 @@ function sendResetMail($email, $resetLink)
         $mail->isSMTP(); 
         $mail->Host = 'smtp.gmail.com'; 
         $mail->SMTPAuth = true; 
-        $mail->Username = 'amitjadav5912@gmail.com'; 
-        $mail->Password = 'pgxq roug jrov vqf'; 
-        // $mail->Username = 'johnaudrey62@gmail.com'; 
-        // $mail->Password = 'woyx oesh itrh oljb'; 
+        // $mail->Username = 'amitjadav5912@gmail.com'; 
+        // $mail->Password = 'pgxq roug jrov vqf'; 
+        $mail->Username = 'johnaudrey62@gmail.com'; 
+        $mail->Password = 'woyx oesh itrh oljb'; 
         $mail->SMTPSecure = 'tls'; 
         $mail->Port = 587; 
 
