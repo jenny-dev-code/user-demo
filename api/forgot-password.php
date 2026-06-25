@@ -43,10 +43,10 @@ $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
 
-    echo json_encode([
-        'status' => false,
-        'message' => 'Email not found'
-    ]);
+echo json_encode([
+    'status' => true,
+    'message' => 'If the email exists, a reset link has been sent'
+]);
 
     exit;
 }

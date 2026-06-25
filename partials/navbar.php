@@ -17,6 +17,10 @@
                class="btn btn-outline-light btn-sm">
                 Users
             </a>
+            <a href="records.php"
+               class="btn btn-outline-light btn-sm">
+                Records
+            </a>
 
             <a href="logout.php"
                class="btn btn-danger btn-sm">

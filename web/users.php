@@ -3,18 +3,32 @@
 require '../includes/auth.php';
 require '../config/database.php';
 
-$result = $conn->query(
-    "SELECT
-        id,
-        name,
-        email,
-        photo,
-        description,
-        location,
-        created_at
-     FROM users
-     ORDER BY id DESC"
-);
+if ($_SESSION['role'] === 'admin') {
+
+    $result = $conn->query(
+        "SELECT *
+         FROM users
+         WHERE role != 'admin'
+         ORDER BY id DESC"
+    );
+
+} else {
+
+    $stmt = $conn->prepare(
+        "SELECT *
+         FROM users
+         WHERE id = ?"
+    );
+
+    $stmt->bind_param(
+        "i",
+        $_SESSION['user_id']
+    );
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+}
 
 include '../partials/header.php';
 include '../partials/navbar.php';
@@ -95,17 +109,18 @@ include '../partials/navbar.php';
 
                         <tr>
                             <th>ID</th>
-                            <th>Photo</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Time</th>
-                            <th>Actions</th>
+                            <th>Created At</th>
+                            <?php if ($_SESSION['role'] === 'admin') : ?>
+                            
+                                <th>Actions</th>
+                            
+                            <?php endif; ?>
                         </tr>
 
                     </thead>
-
+                                
                     <tbody>
 
                         <?php while ($user = $result->fetch_assoc()) : ?>
@@ -117,28 +132,6 @@ include '../partials/navbar.php';
                                 </td>
 
                                 <td>
-
-                                    <?php if (!empty($user['photo'])) : ?>
-
-                                        <img
-                                            src="../uploads/users/<?php echo htmlspecialchars($user['photo']); ?>"
-                                            alt="User Photo"
-                                            width="60"
-                                            height="60"
-                                            class="rounded"
-                                        >
-
-                                    <?php else : ?>
-
-                                        <span class="text-muted">
-                                            No Photo
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                </td>
-
-                                <td>
                                     <?php echo htmlspecialchars($user['name']); ?>
                                 </td>
 
@@ -147,24 +140,19 @@ include '../partials/navbar.php';
                                 </td>
 
                                 <td>
-                                    <?php echo htmlspecialchars($user['description']); ?>
-                                </td>
-
-                                <td>
-                                    <?php echo htmlspecialchars($user['location']); ?>
-                                </td>
-
-                                <td>
                                     <?php echo htmlspecialchars($user['created_at']); ?>
                                 </td>
 
-                                <td>                           
-                                    <a href="delete-user.php?id=<?php echo $user['id']; ?>"
-                                        class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Are you sure you want to delete this user?')">
+                            <?php if ($_SESSION['role'] === 'admin') : ?>
+                                <td>                                                        
+                                    <a
+                                        href="delete-user.php?id=<?php echo $user['id']; ?>"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Delete user?')">
                                         Delete
-                                    </a>
-                                </td>
+                                    </a>                                                        
+                                </td>                                                   
+                            <?php endif; ?>
 
                             </tr>
 

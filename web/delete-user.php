@@ -3,6 +3,21 @@
 require '../includes/auth.php';
 require '../config/database.php';
 
+/*
+|--------------------------------------------------------------------------
+| Admin Only
+|--------------------------------------------------------------------------
+*/
+
+if ($_SESSION['role'] !== 'admin') {
+
+    header(
+        'Location: dashboard.php'
+    );
+
+    exit;
+}
+
 $id = (int)($_GET['id'] ?? 0);
 
 if ($id <= 0) {
@@ -25,12 +40,12 @@ if ($id == $_SESSION['user_id']) {
 
 /*
 |--------------------------------------------------------------------------
-| Get User Photo
+| Check User Exists
 |--------------------------------------------------------------------------
 */
 
 $stmt = $conn->prepare(
-    "SELECT photo
+    "SELECT id
      FROM users
      WHERE id = ?"
 );
@@ -53,23 +68,39 @@ if (!$result->num_rows) {
     exit;
 }
 
-$user = $result->fetch_assoc();
-
 /*
 |--------------------------------------------------------------------------
-| Delete Photo
+| Delete Record Photos
 |--------------------------------------------------------------------------
 */
 
-if (!empty($user['photo'])) {
+$stmt = $conn->prepare(
+    "SELECT photo
+     FROM records
+     WHERE user_id = ?"
+);
 
-    $photoPath =
-        '../uploads/users/' .
-        $user['photo'];
+$stmt->bind_param(
+    "i",
+    $id
+);
 
-    if (file_exists($photoPath)) {
+$stmt->execute();
 
-        unlink($photoPath);
+$result = $stmt->get_result();
+
+while ($record = $result->fetch_assoc()) {
+
+    if (!empty($record['photo'])) {
+
+        $photoPath =
+            '../uploads/records/' .
+            $record['photo'];
+
+        if (file_exists($photoPath)) {
+
+            unlink($photoPath);
+        }
     }
 }
 
@@ -77,6 +108,12 @@ if (!empty($user['photo'])) {
 |--------------------------------------------------------------------------
 | Delete User
 |--------------------------------------------------------------------------
+|
+| Records will automatically delete because of:
+| FOREIGN KEY (user_id)
+| REFERENCES users(id)
+| ON DELETE CASCADE
+|
 */
 
 $stmt = $conn->prepare(

@@ -1,29 +1,41 @@
 <?php
 
-header(
-    'Content-Type: application/json'
-);
+require '../includes/api-auth.php';
 
-require '../config/database.php';
+if ($authUser['role'] === 'admin') {
 
-$result = $conn->query(
-    "SELECT
-        id,
-        name,
-        email,
-        photo,
-        description,
-        location,
-        created_at
-     FROM users
-     ORDER BY id DESC"
-);
+    $result = $conn->query(
+        "SELECT
+            id,
+            name,
+            email,
+            role,
+            created_at
+         FROM users
+         ORDER BY id DESC"
+    );
 
-$users = [];
+    $users = [];
 
-while ($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
 
-    $users[] = $row;
+        $users[] = $row;
+    }
+
+} else {
+
+    $users[] = [
+
+        'id' => $authUser['id'],
+
+        'name' => $authUser['name'],
+
+        'email' => $authUser['email'],
+
+        'role' => $authUser['role'],
+
+        'created_at' => $authUser['created_at']
+    ];
 }
 
 echo json_encode([
