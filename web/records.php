@@ -81,6 +81,12 @@ include '../partials/navbar.php';
                         
                             break;
                         
+                        case 'deleted':
+                        
+                            echo 'Record deleted successfully.';
+                        
+                            break;
+                        
                     }
                         
                     ?>
@@ -135,7 +141,7 @@ include '../partials/navbar.php';
                             <th>Description</th>
                             <th>Location</th>
                             <th>Created At</th>
-
+                            <th>Action</th>
                         </tr>
 
                     </thead>
@@ -198,7 +204,17 @@ include '../partials/navbar.php';
                                 <td>
                                     <?php echo htmlspecialchars($record['created_at']); ?>
                                 </td>
+                                <td>
 
+                                    <a
+                                        href="delete-record.php?id=<?php echo $record['id']; ?>"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Delete this record?')"
+                                    >
+                                        Delete
+                                    </a>
+
+                                </td>
                             </tr>
 
                         <?php endwhile; ?>
