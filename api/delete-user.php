@@ -4,13 +4,13 @@ header('Content-Type: application/json');
 
 require '../includes/api-auth.php';
 
-// if (!isset($authUser) || $authUser['role'] != 'admin') {
-//     echo json_encode([
-//         'status' => false,
-//         'message' => 'Access denied'
-//     ]);
-//     exit;
-// }
+if (!isset($authUser)) {
+    echo json_encode([
+        'status' => false,
+        'message' => 'Unauthorized'
+    ]);
+    exit;
+}
 
 $userId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -22,14 +22,31 @@ if ($userId <= 0) {
     exit;
 }
 
-if ($userId != $authUser['id']) {
-    echo json_encode([
-        'status' => false,
-        'message' => 'You can only delete your own account'
-    ]);
-    exit;
+// Permission Check
+if ($authUser['role'] == 'admin') {
+
+    // Admin cannot delete own account
+    if ($userId == $authUser['id']) {
+        echo json_encode([
+            'status' => false,
+            'message' => 'You cannot delete your own account'
+        ]);
+        exit;
+    }
+
+} else {
+
+    // Normal user can delete only own account
+    if ($userId != $authUser['id']) {
+        echo json_encode([
+            'status' => false,
+            'message' => 'Access denied'
+        ]);
+        exit;
+    }
 }
 
+// Check user exists
 $stmt = $conn->prepare("SELECT id FROM users WHERE id=?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
@@ -43,6 +60,7 @@ if ($result->num_rows == 0) {
     exit;
 }
 
+// Delete uploaded record photos
 $stmt = $conn->prepare("SELECT photo FROM records WHERE user_id=?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
@@ -60,6 +78,7 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
+// Delete user
 $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
 $stmt->bind_param("i", $userId);
 
