@@ -1,154 +1,79 @@
 <?php
 
-header(
-    'Content-Type: application/json'
-);
+header('Content-Type: application/json');
 
 require '../includes/api-auth.php';
 
-/*
-|--------------------------------------------------------------------------
-| Admin Only
-|--------------------------------------------------------------------------
-*/
+// if (!isset($authUser) || $authUser['role'] != 'admin') {
+//     echo json_encode([
+//         'status' => false,
+//         'message' => 'Access denied'
+//     ]);
+//     exit;
+// }
 
-if ($authUser['role'] !== 'admin') {
-
-    echo json_encode([
-        'status' => false,
-        'message' => 'Access denied'
-    ]);
-
-    exit;
-}
-
-$userId = (int)($_GET['id'] ?? 0);
+$userId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($userId <= 0) {
-
     echo json_encode([
         'status' => false,
-        'message' => 'Invalid user'
+        'message' => 'Invalid user id'
     ]);
-
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Prevent Self Delete
-|--------------------------------------------------------------------------
-*/
-
-if ($userId == $authUser['id']) {
-
+if ($userId != $authUser['id']) {
     echo json_encode([
         'status' => false,
-        'message' => 'You cannot delete your own account'
+        'message' => 'You can only delete your own account'
     ]);
-
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Check User Exists
-|--------------------------------------------------------------------------
-*/
-
-$stmt = $conn->prepare(
-    "SELECT id
-     FROM users
-     WHERE id = ?"
-);
-
-$stmt->bind_param(
-    "i",
-    $userId
-);
-
+$stmt = $conn->prepare("SELECT id FROM users WHERE id=?");
+$stmt->bind_param("i", $userId);
 $stmt->execute();
-
 $result = $stmt->get_result();
 
-if (!$result->num_rows) {
-
+if ($result->num_rows == 0) {
     echo json_encode([
         'status' => false,
         'message' => 'User not found'
     ]);
-
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Delete Record Photos
-|--------------------------------------------------------------------------
-*/
-
-$stmt = $conn->prepare(
-    "SELECT photo
-     FROM records
-     WHERE user_id = ?"
-);
-
-$stmt->bind_param(
-    "i",
-    $userId
-);
-
+$stmt = $conn->prepare("SELECT photo FROM records WHERE user_id=?");
+$stmt->bind_param("i", $userId);
 $stmt->execute();
-
 $result = $stmt->get_result();
 
-while ($record = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()) {
 
-    if (!empty($record['photo'])) {
+    if (!empty($row['photo'])) {
 
-        $photoPath =
-            '../uploads/records/' .
-            $record['photo'];
+        $path = "../uploads/records/" . $row['photo'];
 
-        if (file_exists($photoPath)) {
-
-            unlink($photoPath);
+        if (file_exists($path)) {
+            unlink($path);
         }
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Delete User
-|--------------------------------------------------------------------------
-|
-| records table should have:
-| ON DELETE CASCADE
-|
-*/
+$stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+$stmt->bind_param("i", $userId);
 
-$stmt = $conn->prepare(
-    "DELETE
-     FROM users
-     WHERE id = ?"
-);
+if ($stmt->execute()) {
 
-$stmt->bind_param(
-    "i",
-    $userId
-);
+    echo json_encode([
+        'status' => true,
+        'message' => 'User deleted successfully'
+    ]);
 
-if (!$stmt->execute()) {
+} else {
 
     echo json_encode([
         'status' => false,
-        'message' => 'Failed to delete user'
+        'message' => $stmt->error
     ]);
-
-    exit;
 }
-
-echo json_encode([
-    'status' => true,
-    'message' => 'User deleted successfully'
-]);
