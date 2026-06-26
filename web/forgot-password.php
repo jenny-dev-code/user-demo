@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
 
         $link =
-            "http://localhost/user-demo/web/reset-password.php?token="
+            "http://192.168.29.239/intruder_safety/web/reset-password.php?token="
             . $token;
 
         if (sendResetMail($email, $link)) {

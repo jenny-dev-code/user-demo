@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Kolkata');
 $host = "localhost";
 $user = "root";
 $password = "";
-$database = "user-demo";
+$database = "Intruder_safety";
 
 $conn = new mysqli(
     $host,

@@ -3,7 +3,7 @@
 require '../includes/mail.php';
 
 $result = sendResetMail(
-    'johnaudrey62@gmail.com',
+    'amitjadav5912@gmail.com',
     'https://google.com'
 );
 
