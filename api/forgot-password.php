@@ -94,9 +94,7 @@ if (!$stmt->execute()) {
     exit;
 }
 
-$link =
-    "http://192.168.29.239/intruder_safety/web/reset-password.php?token="
-    . $token;
+$link = BASE_URL . '/web/reset-password.php?token=' . $token;
 
 $mailSent = sendResetMail(
     $email,

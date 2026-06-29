@@ -86,7 +86,7 @@ while ($row = $result->fetch_assoc()) {
         'location' => $row['location'],
 
         'photo' => $row['photo']
-            ? 'http://192.168.29.239/intruder_safety/uploads/records/' . $row['photo']
+            ? BASE_URL . '/uploads/records/' . $row['photo']
             : null,
 
         'created_at' => $row['created_at']

@@ -8,10 +8,10 @@
 
         <div>
 
-            <a href="dashboard.php"
+            <!-- <a href="dashboard.php"
                class="btn btn-outline-light btn-sm">
                 Dashboard
-            </a>
+            </a> -->
 
             <a href="users.php"
                class="btn btn-outline-light btn-sm">

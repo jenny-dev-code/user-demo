@@ -53,9 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute();
 
-        $link =
-            "http://192.168.29.239/intruder_safety/web/reset-password.php?token="
-            . $token;
+        $link = BASE_URL . '/web/reset-password.php?token=' . $token;
 
         if (sendResetMail($email, $link)) {
             $message = "Mail sent successfully";

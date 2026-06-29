@@ -25,9 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $passwordHash
     );
 
-    $stmt->execute();
-
-    echo "User Registered";
+    if ($stmt->execute()) {
+        header("Location: login.php");
+        exit;
+    } else {
+        echo "Registration failed!";
+    }
 }
 
 ?>
@@ -54,11 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 Name
                             </label>
 
-                            <input
-                                type="text"
-                                name="name"
-                                class="form-control"
-                                required>
+                            <input type="text" name="name" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
@@ -66,11 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 Email
                             </label>
 
-                            <input
-                                type="email"
-                                name="email"
-                                class="form-control"
-                                required>
+                            <input type="email" name="email" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
@@ -78,11 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 Password
                             </label>
 
-                            <input
-                                type="password"
-                                name="password"
-                                class="form-control"
-                                required>
+                            <input type="password" name="password" class="form-control" required>
                         </div>
 
                         <div class="d-grid">
@@ -114,4 +105,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 </body>
+
 </html>
